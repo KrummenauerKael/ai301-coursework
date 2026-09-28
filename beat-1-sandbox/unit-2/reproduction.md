@@ -15,8 +15,7 @@ label is not graded.
 
 **GitHub username**
 
-[Your GitHub username, exactly as it appears on your profile — no `@`, no profile URL. Your
-comments upstream are identified by this name.]
+KrummenauerKael
 
 ---
 
@@ -24,16 +23,39 @@ comments upstream are identified by this name.]
 
 **Claim comment**
 
-[Link to the comment where you claimed the issue. Use the comment's own permalink, not the
-issue page on its own. **Then paste the text of that comment underneath the link** — the
-pasted text is what this field is graded on, so copy across what you actually posted.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/issues/60#issuecomment-5863255407
+
+Hi, I would like to have a try at this issue. I'll reproduce the `TypeError` when a context chunk has `text: None` in the FaithfulnessChecker on Windows. I'll report with the details after I reproduce this error.
 
 **Reproduction comment**
 
-[Link to the comment where you posted your reproduction. It must record the environment
-(OS, relevant versions, code state), steps a stranger could follow, and what you observed.
-**Then paste the text of that comment underneath the link** — the pasted text is what this
-field is graded on, so copy across what you actually posted.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/issues/60#issuecomment-5863652260
+
+**Reproduction of issue #60**
+
+Environment: commit `f89c06f` (main), Python 3.14.2, Windows 11, set up with `make setup` per docs/SETUP.md.
+
+Steps:
+From the repo root in Git Bash:
+
+```
+.venv/Scripts/python -c "from rag.evaluator.faithfulness_checker import FaithfulnessChecker; FaithfulnessChecker().check('Knows Python.', [{'text': None}])"
+```
+
+Output:
+```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from rag.evaluator.faithfulness_checker import FaithfulnessChecker; FaithfulnessChecker().check('Knows Python.', [{'text': None}])
+                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\ai301-coursework-fork\pathreview-ai301-fa26-s1\rag\evaluator\faithfulness_checker.py", line 38, in check
+    context_text = " ".join([chunk.get("text", "") for chunk in context_chunks])
+TypeError: sequence item 0: expected str instance, NoneType found
+```
+
+Expected: check() treats a chunk with text: None like a missing text and returns a faithfulness score (0.0-1.0) instead of crashing.
+
+Actual: check() raises TypeError: sequence item 0: expected str instance, NoneType found at faithfulness_checker.py line 38, where " ".join(...) receives the None returned by chunk.get("text", "").
 
 ## Eval iterations
 
@@ -42,29 +64,36 @@ fields.
 
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+agreement: 2/3 scored items
+agreement: 2/2 scored items
+agreement: 2/3 scored items
+agreement: 3/3 scored items
+agreement: 20/20 scored items
+agreement: 18/20 scored items
+agreement: 1/2 scored items
+agreement: 2/2 scored items
+agreement: 19/20 scored items
+agreement: 1/1 scored items
+agreement: 19/20 scored items
+agreement: 1/1 scored items
+agreement: 20/20 scored items
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+pkg-03  accept  reject   NO     failed: ai-disclosure
+
+Rubric rejected it when gold label accepted. The issue was that the rubric failed it by seeing the "human-written requirement" as a form of AI disclosure necessity when in reality AI usage was allowed, the comments were the only requirement to being human-written, rubric didn't differentiate.
 
 **Check rationale**
 
-[Quote one check from the `rubric.md` you uploaded to `tools/repro-check/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+| ai-disclosure | the "contribution policy" line in Repo facts, read against both comments | Pass if the policy has no disclosure requirement, or if it does and a comment discloses AI use. Fail if the policy requires disclosure and neither comment discloses. Only policies that say AI must be disclosed count as requirment. Rules that comments must be human-written or that contributors understand and review their work are not disclosure requirements. | required |
+
+'Rules that comments must be human-written or that contributors understand and review their work are not disclosure requirements.' This section had to be added due to the check failing and considering a requirement for comments to be written as humans as a no AI policy.
 
 **Trade-offs**
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
-
+pkg-11 had to be rerun because it would sometimes fail due to filename and path changes it was then changed to pass better by allowing 'innocent' changes to running parameters.
+pkg-05 also would fail occasionaly due to steps-reproduceable. fixing small details about it and specifics of what were truly necessary for a pass solved the borderline fails/pass 
 ---
 
 Related paths: `eval-run.txt` in this directory; your skill's files in
