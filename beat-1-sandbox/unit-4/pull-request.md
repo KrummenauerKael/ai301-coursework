@@ -15,15 +15,11 @@ label is not graded.
 
 **Pull request**
 
-[Link to the pull request you opened. It must be the pull request's own page on the Path
-Review repo, not your fork's branch page.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/pull/187
 
 **Branch**
 
-[The name of the branch the pull request comes from, exactly as it appears in your fork.
-The naming shape is a type prefix, then the issue number, then a short description. **The
-issue number in the branch name must be the number of the issue the pull request fixes** —
-a name carrying any other number does not satisfy this field.]
+fix/60-faithfulness-none-text
 
 ## Eval iterations
 
@@ -32,28 +28,23 @@ fields.
 
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+1. agreement: 19/19 scored items 1 skipped - pkg-5 error due to forgotten UTF-8 command
+2. agreement: 20/20 scored items - corrected UTF-8 run all scored in agreement
+3. agreement: 20/20 scored items - saved to eval-run.txt
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+pkg-20. My rubric said reject, the gold label says reject. It failed on ai-disclosure. The repo's policy says "All AI usage in any form must be disclosed, stating the tool used and the extent of the assistance", and the description has no disclosure. 
 
 **Check rationale**
 
-[Quote one check from the `rubric.md` you uploaded to `tools/pr-precheck/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+| checks-reported | The test evidence, read against the test suite and checks the repo or the plan names | Pass if the suite and every stated check are named with their outcome. A failing check reported with its reason passes. Pass if nothing is named. Fail if a stated check is never mentioned. | required |
+
+I didn't want "every check must pass", because an honest failure shouldn't hold a PR. My own `make typecheck` failed inside numpy's stubs, not my code, and this check let it through because I gave the reason.
 
 **Trade-offs**
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
+It will miss a fake reason. A failing check passes as long as a reason is given, and the skill can't tell if the reason is true.
 
 ---
 
