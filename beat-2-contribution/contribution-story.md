@@ -169,9 +169,9 @@ Import `__version__` in `backend/main.py`, add it to the health response, and pa
 1. Add `test_health_reports_app_version` to `tests/test_main.py`, asserting `response.json()["version"] == backend.__version__`, and confirm it fails on `main`.
 2. Import `__version__` in `backend/main.py` and add `"version": __version__` to the health response.
 3. Replace `version="0.1.0"` with `version=__version__`.
-4. Run `pytest`, `ruff check` and `mypy backend/`.
+4. Run `pytest` and `ruff check`.
 
-No deviations from the posted plan.
+One deviation: I also ran `mypy backend/`, because CONTRIBUTING.md and CI both require it and my posted plan left it out.
 
 **Toolkit**
 
@@ -195,7 +195,7 @@ I tested on Python 3.14.2; CI runs 3.11 and 3.12.
 
 - Tool: Claude Code running pytest, ruff and mypy in my clone's venv, and pr-precheck grading the branch and PR draft (2026-11-06)
 - What it produced: the before/after test results and the three gate results above, saved in `test_evidence.md` in the clone; pr-precheck accepted the second PR draft
-- Difficulties: CI also runs mypy, which I hadn't put in my plan's checks until I read `.github/workflows/ci.yml`
+- Difficulties: my posted plan named only pytest and ruff check, but CONTRIBUTING.md and `.github/workflows/ci.yml` both require `mypy backend/`
 - What changed: I ran `mypy backend/` before opening the PR and added it to the description
 
 ---
@@ -208,7 +208,7 @@ kielni took #53 back and asked to reorganize the entry points first. I released 
 
 **2026-11-06**
 
-Scanned for FastAPI good first issues and chose spec2program#32. Forked, cloned and reproduced it in about ten minutes: venv, `pip install -r requirements-dev.txt`, uvicorn, curl. Posted one comment with claim, repro and plan. Wrote the failing test, made the three-line fix, and ran the CI gates; all passed. Committed as `e411398` ("Report app version in /api/health (#32)") on `32-health-version` and pushed to my fork. Wrong turn: I posted the comment with `Python [version]` still in it and fixed it with an edit.
+Scanned for FastAPI good first issues and chose spec2program#32. Forked, cloned and reproduced it: venv, `pip install -r requirements-dev.txt`, uvicorn, curl. Posted one comment with claim, repro and plan (16:19 UTC). Wrote the failing test, made the three-line fix, and ran the CI gates; all passed. Committed as `e411398` ("Report app version in /api/health (#32)") on `32-health-version`, pushed to my fork, and opened PR #33 at 16:30 UTC, 11 minutes after the comment. Wrong turn: I posted the comment with `Python [version]` still in it and fixed it with an edit.
 
 **Toolkit**
 
@@ -246,7 +246,7 @@ Scanned for FastAPI good first issues and chose spec2program#32. Forked, cloned 
 
 - Testing a FastAPI endpoint in-process with `TestClient`, and writing the test first so it fails with the exact error (`KeyError: 'version'`) before the fix.
 - Keeping one source of truth for a version string: importing `__version__` from the package instead of repeating the literal in `FastAPI(...)`.
-- Running a project's real CI gates locally (pytest, ruff, mypy) after reading `.github/workflows/ci.yml`, rather than only the ones its docs mention first.
+- Running a project's real CI gates locally (pytest, ruff, mypy) by checking CONTRIBUTING.md against `.github/workflows/ci.yml`, instead of only the checks I had put in my plan.
 - From #53: running a project in its CI Docker image when my own machine can't match a pinned dependency (GDAL 3.13.3).
 - Working from a fork: `origin` for my branch, `upstream` for the original repo, and a PR from fork to `main`.
 
@@ -254,7 +254,7 @@ Scanned for FastAPI good first issues and chose spec2program#32. Forked, cloned 
 
 - Claimed issues. My first two scans rejected all ten graded candidates as already claimed, mostly through open PRs that the issue pages never linked. I added an open-PR search to my rubric, which then caught aiwaf#34's open PR #38 on 2026-11-06.
 - Losing #53. I had a passing branch, but the maintainer took the issue back on 2026-11-04. I released it in the thread the same day and re-scanned with a tighter constraint: a repro that needs only a pip install and one request.
-- Heavy setups. Beam#19246 needed a BigQuery project and #53 needed a pinned GDAL in Docker. For #32 I filtered for a mock-LLM app with no key or database, and went from fork to reproduction in about ten minutes.
+- Heavy setups. Beam#19246 needed a BigQuery project and #53 needed a pinned GDAL in Docker. For #32 I filtered for a mock-LLM app with no key or database, and opened the PR 11 minutes after posting my claim (comment 16:19 UTC, PR 16:30 UTC).
 - Markdown eating my code. Copying my draft from rendered chat turned `backend.__version__` into `backend.version`; wrapping every code name in backticks fixed it.
 
 **What I'd Do Differently Next Time**
@@ -270,6 +270,6 @@ Scanned for FastAPI good first issues and chose spec2program#32. Forked, cloned 
 
 - spec2program's CONTRIBUTING.md (https://github.com/iamvisheshsrivastava/spec2program/blob/main/CONTRIBUTING.md): the venv and `pip install -r requirements-dev.txt` setup, the note that the mock LLM needs no key, the three CI gates, and the pull request process I followed.
 - The issue's own task list (https://github.com/iamvisheshsrivastava/spec2program/issues/32): it named the file, the constant and the test, and my plan follows its three tasks.
-- spec2program's `.github/workflows/ci.yml`: showed that CI also runs `mypy backend/` and a `duration_model` check, which I ran before opening the PR.
+- spec2program's `.github/workflows/ci.yml`: confirmed the gates CONTRIBUTING.md lists, including `mypy backend/`, plus a `duration_model` check, all of which I ran before opening the PR.
 - ecoscape-connectivity's `.github/workflows/tests.yml` (for #53): pointed me to the `ghcr.io/osgeo/gdal:ubuntu-small-3.13.3` image I reproduced in.
 - kielni's reply on ecoscape-connectivity#53 (2026-11-04): explained why the issue wasn't ready to work on, which is why I moved to #32.
